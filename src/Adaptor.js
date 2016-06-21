@@ -1,6 +1,7 @@
 import { execute as commonExecute, expandReferences } from 'language-common';
 import { post } from './Client';
 import { resolve as resolveUrl } from 'url';
+import js2xmlparser from 'js2xmlparser';
 
 /** @module Adaptor */
 
@@ -38,19 +39,23 @@ export function execute(...operations) {
  * @param {object} submitForm - Payload data for the form
  * @returns {Operation}
  */
-export function submitForm(data) {
+export function submitRecord(data) {
 
   return state => {
-    const body = expandReferences(data)(state);
+    const jsonBody = expandReferences(data)(state);
+    const body = js2xmlparser("form", jsonBody);
 
     const { username, password, apiUrl } = state.configuration;
 
-    const url = resolveUrl(apiUrl + '/', 'api/events')
+    //const url = resolveUrl(apiUrl + '/', 'forms-dashboard')
+    //const url = 'https://www.magpi.com/UploadRecordsNew'
+    const url = 'https://www.magpi.com/mobileApi/uploadData'
 
-    console.log("Posting form submission:");
-    console.log(body)
+    console.log("Posting to url: ". concat(url));
+    console.log("Raw JSON body: ".concat(JSON.stringify(jsonBody)));
+    console.log("X-form submission: ".concat(body));
 
-    return post({ username, password, body, url })
+    return post({ url, body })
     .then((result) => {
       console.log("Success:", result);
       return { ...state, references: [ result, ...state.references ] }
@@ -60,6 +65,6 @@ export function submitForm(data) {
 }
 
 export {
-  field, fields, sourceValue,
+  field, fields, sourceValue, each,
   merge, dataPath, dataValue, lastReferenceValue
 } from 'language-common';
