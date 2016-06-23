@@ -30,13 +30,13 @@ export function execute(...operations) {
 }
 
 /**
- * Submit a form
+ * Submit a record for a form/survey which already exists in a Magpi user account
  * @example
  * execute(
- *   submitForm(data)
+ *   submitRecord(data)
  * )(state)
  * @constructor
- * @param {object} submitForm - Payload data for the form
+ * @param {object} submitRecord - Payload data for the record
  * @returns {Operation}
  */
 export function submitRecord(data) {
@@ -47,9 +47,8 @@ export function submitRecord(data) {
 
     const { username, password, apiUrl } = state.configuration;
 
-    //const url = resolveUrl(apiUrl + '/', 'forms-dashboard')
-    //const url = 'https://www.magpi.com/UploadRecordsNew'
-    const url = 'https://www.magpi.com/mobileApi/uploadData'
+    const url = resolveUrl(apiUrl + '/', 'mobileApi/uploadData')
+    //const url = 'https://www.magpi.com/mobileApi/uploadData'
 
     console.log("Posting to url: ". concat(url));
     console.log("Raw JSON body: ".concat(JSON.stringify(jsonBody)));

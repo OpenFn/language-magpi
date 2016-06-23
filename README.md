@@ -1,20 +1,18 @@
-Language magpi
+Language Magpi
 ==============
 
 Language Pack for building expressions and operations for working with
-the [magpi inbound API](http://support.magpi.com/support/solutions/articles/4839-magpi-inbound-api).
+the [Magpi inbound API](http://support.magpi.com/support/solutions/articles/4839-magpi-inbound-api).
 
 Documentation
 -------------
-## Records API
+## Submit new records API
+Allows you to push data to Magpi to create a new record for a form which exists in a user account.
 
-#### Using `submitForm`:
+#### Using `submitRecord`:
 ```js
-`submitForm(..)`
+`submitRecord(...)`
 ```
-
-[Docs](docs/index)
-
 
 Development
 -----------
