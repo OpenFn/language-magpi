@@ -1,7 +1,8 @@
 import { execute as commonExecute, expandReferences } from 'language-common';
-import { post } from './Client';
 import { resolve as resolveUrl } from 'url';
 import js2xmlparser from 'js2xmlparser';
+import Adaptor from 'language-http';
+const { get, post } = Adaptor;
 
 /** @module Adaptor */
 
@@ -54,11 +55,11 @@ export function submitRecord(data) {
     console.log("Raw JSON body: ".concat(JSON.stringify(jsonBody)));
     console.log("X-form submission: ".concat(body));
 
-    return post({ url, body })
-    .then((result) => {
-      console.log("Success:", result);
-      return { ...state, references: [ result, ...state.references ] }
-    })
+    // return post({ url, body })
+    // .then((result) => {
+    //   console.log("Success:", result);
+    //   return { ...state, references: [ result, ...state.references ] }
+    // })
 
   }
 }

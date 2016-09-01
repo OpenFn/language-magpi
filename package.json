@@ -1,6 +1,6 @@
 {
   "name": "language-magpi",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "magpi Language Pack for OpenFn",
   "main": "lib/index.js",
   "scripts": {
@@ -16,6 +16,7 @@
   "dependencies": {
     "JSONPath": "^0.10.0",
     "language-common": "github:openfn/language-common",
+    "language-http": "github:openfn/language-http#master",
     "lodash-fp": "^0.10.2",
     "superagent": "^1.7.2"
   },
