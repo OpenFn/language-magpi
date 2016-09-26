@@ -64,6 +64,49 @@ export function submitRecord(data) {
   }
 }
 
+/**
+ * Make a GET request and POST it somewhere else
+ * https://www.magpi.com/api/surveydata/v2?username=taylordowns2000&accesstoken=BLAHBLAHBLAH&surveyid=921409679070
+ * @example
+ * execute(
+ *   fetch(params)
+ * )(state)
+ * @constructor
+ * @param {object} params - data to make the fetch
+ * @returns {Operation}
+ */
+export function fetchSurveyData(formId, afterDate, postUrl) {
+  return get(`forms/data/wide/json/${ formId }`, {
+    query: function(state) {
+      console.log("baseUrl: ".concat(state.configuration.baseUrl))
+      return { date: state.lastSubmissionDate || afterDate }
+    },
+    callback: function(state) {
+      // Pick submissions out in order to avoid `post` overwriting `response`.
+      var submissions = state.response.body;
+      // return submissions
+      return submissions.reduce(function(acc, item) {
+        // tag submissions as part of the identified form
+        item.formId = formId;
+        return acc.then(
+          post( postUrl, { body: item })
+        )
+      }, Promise.resolve(state))
+        .then(function(state) {
+          if (submissions.length) {
+            state.lastSubmissionDate = submissions[submissions.length-1].SubmissionDate
+          }
+          return state;
+        })
+        .then(function(state) {
+          delete state.response
+          console.log("fetchSubmissions succeeded.")
+          return state;
+        })
+    }
+  })
+}
+
 export {
   field, fields, sourceValue, each,
   merge, dataPath, dataValue, lastReferenceValue

@@ -12,15 +12,16 @@ Allows you to push data to Magpi to create a new record for a form which exists 
 
 #### Using `submitRecord`:
 ```js
-`submitRecord(...)`
+`submitRecord(1,2)`
 ```
 
 ## Fetch data from Magpi
 Allows you to fetch data from Magpi and post it elsewhere.
 
 #### Using `fetchData`:
+https://www.magpi.com/api/surveydata/v2?username=taylordowns2000&accesstoken=blahblahblah&surveyid=921409679070
 ```js
-`fetchData(...)`
+`fetchSurveyData(1,2,3)`
 ```
 
 Development
