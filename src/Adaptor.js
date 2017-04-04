@@ -1,14 +1,9 @@
-import {
-  execute as commonExecute,
-  expandReferences
-} from 'language-common';
-import {
-  resolve as resolveUrl
-} from 'url';
+import { execute as commonExecute, expandReferences } from 'language-common';
+import { resolve as resolveUrl } from 'url';
 import js2xmlparser from 'js2xmlparser';
 import request from 'request';
-var parser = require('xml2json');
-
+import parser from 'xml2json';
+// var parser = require('xml2json');
 /** @module Adaptor */
 
 /**
@@ -30,9 +25,7 @@ export function execute(...operations) {
   }
 
   return state => {
-    return commonExecute(...operations)({ ...initialState,
-      ...state
-    })
+    return commonExecute(...operations)({ ...initialState, ...state })
   };
 
 }
@@ -92,19 +85,13 @@ export function fetchSurveyData(params) {
 
     const {
       formId,
-      beforeDate,
       afterDate,
-      postUrl
-    } = expandReferences(params)(state);
-    const {
-      accessToken,
-      username
-    } = state.configuration;
+      beforeDate,
+      postUrl } = expandReferences(params)(state);
+    const { accessToken, username } = state.configuration;
+    const startdate = ( state.lastSubmissionDate || afterDate );
 
-    function assembleError({
-      response,
-      error
-    }) {
+    function assembleError({ response, error }) {
       if (response && ([200, 201, 202].indexOf(response.statusCode) > -1)) return false;
       if (error) return error;
       return new Error(`Server responded with ${response.statusCode}`)
@@ -114,31 +101,30 @@ export function fetchSurveyData(params) {
     const form = {
       username: username,
       accesstoken: accessToken,
-      surveyid: formId
+      surveyid: formId,
+      startdate: startdate
     };
 
-    new Promise((resolve, reject) => {
-
-      request.post({ url, form }, function(error, response, body) {
-        console.log(body);
-        const jsonBody = JSON.parse(parser.toJson(body));
-        request.post({
-          url: postUrl,
-          json: jsonBody
-        }, function(error, response, postResponseBody) {
-          error = assembleError({
-            error,
-            response
-          })
-          if (error) {
-            console.error("POST failed.")
-            reject(error);
-          } else {
-            console.log("POST succeeded.");
-          }
+    request.post({ url, form }, function(error, response, body) {
+      console.log(body);
+      const jsonBody = JSON.parse(parser.toJson(body));
+      console.log(JSON.stringify(jsonBody));
+      request.post({
+        url: postUrl,
+        json: jsonBody
+      }, function(error, response, postResponseBody) {
+        error = assembleError({
+          error,
+          response
         })
-      }); // close the request.get()
-    }); // close the Promise.
+        if (error) {
+          console.error("POST failed.")
+          reject(error);
+        } else {
+          console.log("POST succeeded.");
+        }
+      })
+    }); // close the request.get()
 
   }
 

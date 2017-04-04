@@ -7,6 +7,15 @@ the [Magpi inbound API](http://support.magpi.com/support/solutions/articles/4839
 
 Documentation
 -------------
+
+## Sample configuration
+```json
+"configuration": {
+  "username": "taylordowns2000",
+  "accessToken": "super-secret"
+}
+```
+
 ## Fetch data from Magpi
 Allows you to fetch data from Magpi and post it elsewhere.
 
@@ -29,6 +38,13 @@ Allows you to push data to Magpi to create a new record for a form which exists 
 ```js
 submitRecord(1,2)
 ```
+
+#### Magpi Outbound API Parameters:
+- `username`:	The account username.
+- `accesstoken`:	The accesstoken generated on the site. Each accesstoken is associated with the user who generated.
+- `surveyid`:	The surveyid is not the survey's name. The surveyid can be obtained from the list of forms generated in 1 above.
+- `startdate`:	Start date of the data to be returned. Filtering is done based on the DateStamp and is inclusive.(Optional). The date format should be the same one as the one on the data tab/ The date format should be the same one as the one on the data tab
+- `enddate`:	End date of the data to be returned. Filtering is done based on the DateStamp and is inclusive.(Optional)
 
 Development
 -----------
