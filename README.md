@@ -1,4 +1,4 @@
-Language Magpi
+Language Magpi [![Build Status](https://travis-ci.org/OpenFn/language-magpi.svg?branch=master)](https://travis-ci.org/OpenFn/language-magpi)
 ==============
 
 Language Pack for building expressions and operations for working with
@@ -21,13 +21,14 @@ fetchSurveyData({
 });
 ```
 
-<!-- ## Submit new records
+## Submit new records
+**wip**
 Allows you to push data to Magpi to create a new record for a form which exists in a user account.
 
 #### Using `submitRecord`:
 ```js
-`submitRecord(1,2)`
-``` -->
+submitRecord(1,2)
+```
 
 Development
 -----------
