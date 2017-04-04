@@ -1,8 +1,13 @@
-import { execute as commonExecute, expandReferences } from 'language-common';
-import { resolve as resolveUrl } from 'url';
+import {
+  execute as commonExecute,
+  expandReferences
+} from 'language-common';
+import {
+  resolve as resolveUrl
+} from 'url';
 import js2xmlparser from 'js2xmlparser';
-import Adaptor from 'language-http';
-const { get, post } = Adaptor;
+import request from 'request';
+var parser = require('xml2json');
 
 /** @module Adaptor */
 
@@ -25,7 +30,9 @@ export function execute(...operations) {
   }
 
   return state => {
-    return commonExecute(...operations)({ ...initialState, ...state })
+    return commonExecute(...operations)({ ...initialState,
+      ...state
+    })
   };
 
 }
@@ -46,12 +53,16 @@ export function submitRecord(data) {
     const jsonBody = expandReferences(data)(state);
     const body = js2xmlparser("form", jsonBody);
 
-    const { username, password, apiUrl } = state.configuration;
+    const {
+      username,
+      password,
+      apiUrl
+    } = state.configuration;
 
     const url = resolveUrl(apiUrl + '/', 'mobileApi/uploadData')
     //const url = 'https://www.magpi.com/mobileApi/uploadData'
 
-    console.log("Posting to url: ". concat(url));
+    console.log("Posting to url: ".concat(url));
     console.log("Raw JSON body: ".concat(JSON.stringify(jsonBody)));
     console.log("X-form submission: ".concat(body));
 
@@ -65,49 +76,82 @@ export function submitRecord(data) {
 }
 
 /**
- * Make a GET request and POST it somewhere else
+ * Make a POST request to fetch Magpi data and POST it somewhere else
  * https://www.magpi.com/api/surveydata/v2?username=taylordowns2000&accesstoken=BLAHBLAHBLAH&surveyid=921409679070
  * @example
  * execute(
- *   fetch(params)
+ *   fetchSurveyData(params)
  * )(state)
  * @constructor
  * @param {object} params - data to make the fetch
  * @returns {Operation}
  */
-export function fetchSurveyData(formId, afterDate, postUrl) {
-  return get(`forms/data/wide/json/${ formId }`, {
-    query: function(state) {
-      console.log("baseUrl: ".concat(state.configuration.baseUrl))
-      return { date: state.lastSubmissionDate || afterDate }
-    },
-    callback: function(state) {
-      // Pick submissions out in order to avoid `post` overwriting `response`.
-      var submissions = state.response.body;
-      // return submissions
-      return submissions.reduce(function(acc, item) {
-        // tag submissions as part of the identified form
-        item.formId = formId;
-        return acc.then(
-          post( postUrl, { body: item })
-        )
-      }, Promise.resolve(state))
-        .then(function(state) {
-          if (submissions.length) {
-            state.lastSubmissionDate = submissions[submissions.length-1].SubmissionDate
+export function fetchSurveyData(params) {
+
+  return state => {
+
+    const {
+      formId,
+      beforeDate,
+      afterDate,
+      postUrl
+    } = expandReferences(params)(state);
+    const {
+      accessToken,
+      username
+    } = state.configuration;
+
+    function assembleError({
+      response,
+      error
+    }) {
+      if (response && ([200, 201, 202].indexOf(response.statusCode) > -1)) return false;
+      if (error) return error;
+      return new Error(`Server responded with ${response.statusCode}`)
+    };
+
+    const url = "https://www.magpi.com/api/surveydata/v2";
+    const form = {
+      username: username,
+      accesstoken: accessToken,
+      surveyid: formId
+    };
+
+    new Promise((resolve, reject) => {
+
+      request.post({ url, form }, function(error, response, body) {
+        console.log(body);
+        const jsonBody = JSON.parse(parser.toJson(body));
+        request.post({
+          url: postUrl,
+          json: jsonBody
+        }, function(error, response, postResponseBody) {
+          error = assembleError({
+            error,
+            response
+          })
+          if (error) {
+            console.error("POST failed.")
+            reject(error);
+          } else {
+            console.log("POST succeeded.");
           }
-          return state;
         })
-        .then(function(state) {
-          delete state.response
-          console.log("fetchSubmissions succeeded.")
-          return state;
-        })
-    }
-  })
-}
+      }); // close the request.get()
+    }); // close the Promise.
+
+  }
+
+};
 
 export {
-  field, fields, sourceValue, each,
-  merge, dataPath, dataValue, lastReferenceValue
-} from 'language-common';
+  field,
+  fields,
+  sourceValue,
+  each,
+  merge,
+  dataPath,
+  dataValue,
+  lastReferenceValue
+}
+from 'language-common';
