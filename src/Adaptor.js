@@ -102,7 +102,7 @@ export function fetchSurveyData(params) {
           error = assembleError({ error, response })
           if (error) {
             console.error("POST failed.")
-            reject(error);
+            console.log(error);
           } else {
             console.log("POST succeeded.");
           }
@@ -112,6 +112,7 @@ export function fetchSurveyData(params) {
     })
     .then((submissions) => {
       if (submissions.length) {
+        // TODO: if Magpi API does not return in date order, find oldest...
         state.lastSubmissionDate = submissions[0].LastSubmissionDate
       }
       // Set the lastSubmissionDate for the next time the job runs.
