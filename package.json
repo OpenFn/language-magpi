@@ -1,7 +1,7 @@
 {
   "name": "language-magpi",
-  "version": "0.0.3",
-  "description": "magpi Language Pack for OpenFn",
+  "version": "0.1.0",
+  "description": "A Magpi Language Pack for OpenFn",
   "main": "lib/index.js",
   "scripts": {
     "build": "make",
@@ -15,6 +15,7 @@
   ],
   "dependencies": {
     "JSONPath": "^0.10.0",
+    "js2xmlparser": "^3.0.0",
     "language-common": "github:openfn/language-common",
     "lodash-fp": "^0.10.2",
     "request": "^2.81.0",
