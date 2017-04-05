@@ -44,23 +44,24 @@ export function fetchSurveyData(params) {
 
   return state => {
 
-    const {
-      formId,
-      afterDate,
-      beforeDate,
-      postUrl } = expandReferences(params)(state);
-    const { accessToken, username } = state.configuration;
-
-    const enddate = ( beforeDate || "2100-01-01 12:00:00" );
-    const startdate = ( state.lastSubmissionDate || afterDate );
-
+    // an error helper function...
     function assembleError({ response, error }) {
       if (response && ([200, 201, 202].indexOf(response.statusCode) > -1)) return false;
       if (error) return error;
       return new Error(`Server responded with ${response.statusCode}`)
     };
 
+    const { formId, afterDate, beforeDate, postUrl } = expandReferences(params)(state);
+
+    const { accessToken, username } = state.configuration;
+
+    // Remove this once API is updated to make beforedate optional...
+    const enddate = ( beforeDate || "2100-01-01 12:00:00" );
+
+    const startdate = ( state.lastSubmissionDate || afterDate );
+
     const url = "https://www.magpi.com/api/surveydata/v2";
+
     const form = {
       username,
       accesstoken: accessToken,
