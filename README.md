@@ -24,7 +24,7 @@ https://www.magpi.com/api/surveydata/v2?username=taylordowns2000&accesstoken=bla
 ```js
 fetchSurveyData({
   "formId": 37479,
-  // "afterDate": "2016-01-01",
+  "afterDate": "2016-01-01",
   // "beforeDate": "2017-01-01",
   "postUrl": "https://www.openfn.org/inbox/secret-5c25-inbox-ba2c-url"
 });

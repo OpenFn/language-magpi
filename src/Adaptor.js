@@ -89,6 +89,8 @@ export function fetchSurveyData(params) {
       beforeDate,
       postUrl } = expandReferences(params)(state);
     const { accessToken, username } = state.configuration;
+
+    const enddate = ( beforeDate || "2100-01-01 12:00:00" );
     const startdate = ( state.lastSubmissionDate || afterDate );
 
     function assembleError({ response, error }) {
@@ -98,15 +100,19 @@ export function fetchSurveyData(params) {
     };
 
     const url = "https://www.magpi.com/api/surveydata/v2";
+    // const url = "http://requestb.in/1gdsvvh1";
     const form = {
-      username: username,
+      username,
       accesstoken: accessToken,
       surveyid: formId,
-      startdate: startdate
+      startdate,
+      enddate
     };
 
+    console.log(form)
+
     request.post({ url, form }, function(error, response, body) {
-      console.log(body);
+      console.log(response);
       const jsonBody = JSON.parse(parser.toJson(body));
       console.log(JSON.stringify(jsonBody));
       request.post({
@@ -124,7 +130,7 @@ export function fetchSurveyData(params) {
           console.log("POST succeeded.");
         }
       })
-    }); // close the request.get()
+    }); // request.post()
 
   }
 
