@@ -102,13 +102,16 @@ export function fetchSurveyData(params) {
           error = assembleError({ error, response })
           if (error) {
             console.error("POST failed.")
-            console.log(error);
+            console.log(error)
           } else {
             console.log("POST succeeded.");
           }
         })
       });
       return submissions;
+    })
+    .catch((error) => {
+      throw(error);
     })
     .then((submissions) => {
       if (submissions.length) {
