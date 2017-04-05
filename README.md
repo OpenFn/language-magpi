@@ -5,6 +5,8 @@ Language Pack for building expressions and operations for working with
 the [Magpi inbound API](http://support.magpi.com/support/solutions/articles/4839-magpi-inbound-api) and the
 [Magpi outbound API](http://support.magpi.com/support/solutions/articles/4865-magpi-outbound-api).
 
+The Magpi API is under development and this pack may change.
+
 Documentation
 -------------
 

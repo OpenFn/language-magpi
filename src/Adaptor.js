@@ -3,7 +3,6 @@ import { resolve as resolveUrl } from 'url';
 import js2xmlparser from 'js2xmlparser';
 import request from 'request';
 import parser from 'xml2json';
-// var parser = require('xml2json');
 /** @module Adaptor */
 
 /**
@@ -29,6 +28,99 @@ export function execute(...operations) {
   };
 
 }
+
+/**
+ * Make a POST request to fetch Magpi data and POST it somewhere else
+ * https://www.magpi.com/api/surveydata/v2?username=taylordowns2000&accesstoken=BLAHBLAHBLAH&surveyid=921409679070
+ * @example
+ * execute(
+ *   fetchSurveyData(params)
+ * )(state)
+ * @constructor
+ * @param {object} params - data to make the fetch
+ * @returns {Operation}
+ */
+export function fetchSurveyData(params) {
+
+  return state => {
+
+    const {
+      formId,
+      afterDate,
+      beforeDate,
+      postUrl } = expandReferences(params)(state);
+    const { accessToken, username } = state.configuration;
+
+    const enddate = ( beforeDate || "2100-01-01 12:00:00" );
+    const startdate = ( state.lastSubmissionDate || afterDate );
+
+    function assembleError({ response, error }) {
+      if (response && ([200, 201, 202].indexOf(response.statusCode) > -1)) return false;
+      if (error) return error;
+      return new Error(`Server responded with ${response.statusCode}`)
+    };
+
+    const url = "https://www.magpi.com/api/surveydata/v2";
+
+    const form = {
+      username,
+      accesstoken: accessToken,
+      surveyid: formId,
+      startdate,
+      enddate
+    };
+
+    return new Promise((resolve, reject) => {
+      request({
+        method: 'POST',
+        url: url,
+        form: form
+      }, (error, response, body) => {
+        error = assembleError({ error, response })
+        if (error) {
+          console.log("Failed to fetch submission data.")
+          reject(error);
+        } else {
+          console.log("Successfully fetched submission data.")
+          const jsonBody = JSON.parse(parser.toJson(body));
+          var submissions = jsonBody.SurveyDataList.SurveyData;
+          console.log(`Converted ${submissions.length} submission(s) to JSON:`)
+          console.log(submissions);
+          resolve(submissions);
+        }
+      })
+    })
+    .then((submissions) => {
+      submissions.forEach((item) => {
+        item.formId = formId;
+        item.source = "Magpi API"
+        console.log(item)
+        request.post({
+          url: postUrl,
+          json: item
+        }, (error, response, postResponseBody) => {
+          error = assembleError({ error, response })
+          if (error) {
+            console.error("POST failed.")
+            reject(error);
+          } else {
+            console.log("POST succeeded.");
+          }
+        })
+      });
+      return submissions;
+    })
+    .then((submissions) => {
+      if (submissions.length) {
+        state.lastSubmissionDate = submissions[0].LastSubmissionDate
+      }
+      // Set the lastSubmissionDate for the next time the job runs.
+      return state;
+    });
+
+  } // done returning state.
+
+}; // done with exported function.
 
 /**
  * Submit a record for a form/survey which already exists in a Magpi user account
@@ -67,74 +159,6 @@ export function submitRecord(data) {
 
   }
 }
-
-/**
- * Make a POST request to fetch Magpi data and POST it somewhere else
- * https://www.magpi.com/api/surveydata/v2?username=taylordowns2000&accesstoken=BLAHBLAHBLAH&surveyid=921409679070
- * @example
- * execute(
- *   fetchSurveyData(params)
- * )(state)
- * @constructor
- * @param {object} params - data to make the fetch
- * @returns {Operation}
- */
-export function fetchSurveyData(params) {
-
-  return state => {
-
-    const {
-      formId,
-      afterDate,
-      beforeDate,
-      postUrl } = expandReferences(params)(state);
-    const { accessToken, username } = state.configuration;
-
-    const enddate = ( beforeDate || "2100-01-01 12:00:00" );
-    const startdate = ( state.lastSubmissionDate || afterDate );
-
-    function assembleError({ response, error }) {
-      if (response && ([200, 201, 202].indexOf(response.statusCode) > -1)) return false;
-      if (error) return error;
-      return new Error(`Server responded with ${response.statusCode}`)
-    };
-
-    const url = "https://www.magpi.com/api/surveydata/v2";
-    // const url = "http://requestb.in/1gdsvvh1";
-    const form = {
-      username,
-      accesstoken: accessToken,
-      surveyid: formId,
-      startdate,
-      enddate
-    };
-
-    console.log(form)
-
-    request.post({ url, form }, function(error, response, body) {
-      console.log(response);
-      const jsonBody = JSON.parse(parser.toJson(body));
-      console.log(JSON.stringify(jsonBody));
-      request.post({
-        url: postUrl,
-        json: jsonBody
-      }, function(error, response, postResponseBody) {
-        error = assembleError({
-          error,
-          response
-        })
-        if (error) {
-          console.error("POST failed.")
-          reject(error);
-        } else {
-          console.log("POST succeeded.");
-        }
-      })
-    }); // request.post()
-
-  }
-
-};
 
 export {
   field,
