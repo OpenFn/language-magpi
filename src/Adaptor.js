@@ -61,7 +61,6 @@ export function fetchSurveyData(params) {
     };
 
     const url = "https://www.magpi.com/api/surveydata/v2";
-
     const form = {
       username,
       accesstoken: accessToken,
