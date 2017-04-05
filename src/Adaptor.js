@@ -81,12 +81,26 @@ export function fetchSurveyData(params) {
           console.log("Failed to fetch submission data.")
           reject(error);
         } else {
-          console.log("Successfully fetched submission data.")
           const jsonBody = JSON.parse(parser.toJson(body));
-          var submissions = jsonBody.SurveyDataList.SurveyData;
-          console.log(`Converted ${submissions.length} submission(s) to JSON:`)
-          console.log(submissions);
-          resolve(submissions);
+          if (jsonBody.SurveyDataList.SurveyData) {
+            console.log("Successfully fetched submission data.")
+
+            // Coerce survey data into an array for iteration...
+            if (jsonBody.SurveyDataList.SurveyData.length) {
+              var submissions = jsonBody.SurveyDataList.SurveyData;
+            } else {
+              var submissions = [jsonBody.SurveyDataList.SurveyData];
+            }
+
+            console.log(`Converted ${submissions.length} submission(s) to JSON:`)
+            console.log(submissions);
+            resolve(submissions);
+
+          } else {
+            console.log("There is no survey data matching the current parameters.")
+            resolve([])
+          }
+
         }
       })
     })
@@ -111,6 +125,7 @@ export function fetchSurveyData(params) {
       return submissions;
     })
     .catch((error) => {
+      console.log("The job run failed.");
       throw(error);
     })
     .then((submissions) => {
