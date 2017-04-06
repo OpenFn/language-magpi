@@ -51,13 +51,11 @@ export function fetchSurveyData(params) {
       return new Error(`Server responded with ${response.statusCode}`)
     };
 
-    const { formId, afterDate, beforeDate, postUrl } = expandReferences(params)(state);
+    const { surveyId, afterDate, beforeDate, postUrl } = expandReferences(params)(state);
 
     const { accessToken, username } = state.configuration;
 
-    // Remove this once API is updated to make beforedate optional...
-    const enddate = ( beforeDate || "2100-01-01 12:00:00" );
-
+    const enddate = beforeDate;
     const startdate = ( state.lastSubmissionDate || afterDate );
 
     const url = "https://www.magpi.com/api/surveydata/v2";
@@ -65,9 +63,9 @@ export function fetchSurveyData(params) {
     const form = {
       username,
       accesstoken: accessToken,
-      surveyid: formId,
+      surveyid: surveyId,
       startdate,
-      enddate
+      enddate: enddate
     };
 
     return new Promise((resolve, reject) => {
@@ -106,7 +104,7 @@ export function fetchSurveyData(params) {
     })
     .then((submissions) => {
       submissions.forEach((item) => {
-        item.formId = formId;
+        item.surveyId = surveyId;
         item.source = "Magpi API"
         console.log(item)
         request.post({
@@ -116,7 +114,7 @@ export function fetchSurveyData(params) {
           error = assembleError({ error, response })
           if (error) {
             console.error("POST failed.")
-            console.log(error)
+            throw(error)
           } else {
             console.log("POST succeeded.");
           }
@@ -124,14 +122,11 @@ export function fetchSurveyData(params) {
       });
       return submissions;
     })
-    .catch((error) => {
-      console.log("The job run failed.");
-      throw(error);
-    })
     .then((submissions) => {
       if (submissions.length) {
         // TODO: if Magpi API does not return in date order, find oldest...
         state.lastSubmissionDate = submissions[0].LastSubmissionDate
+        console.log(`Set \"lastSubmissionDate\" for next run to: ${submissions[0].LastSubmissionDate}`)
       }
       // Set the lastSubmissionDate for the next time the job runs.
       return state;
