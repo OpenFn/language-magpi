@@ -58,7 +58,7 @@ export function fetchSurveyData(params) {
     const enddate = beforeDate;
     const startdate = ( state.lastSubmissionDate || afterDate );
 
-    const url = "https://www.magpi.com/api/surveydata/v2";
+    const url = "https://www.magpi.com/api/surveydata/v3";
 
     const form = {
       username,
@@ -67,6 +67,9 @@ export function fetchSurveyData(params) {
       startdate,
       enddate: enddate
     };
+
+    console.log(`Fetching Survey ${form.surveyid} submissions from ${url}`);
+    console.log(`Date filters: "${form.startdate}" to "${form.enddate}".`);
 
     return new Promise((resolve, reject) => {
       request({
@@ -91,7 +94,7 @@ export function fetchSurveyData(params) {
             }
 
             console.log(`Converted ${submissions.length} submission(s) to JSON:`)
-            console.log(submissions);
+            // console.log(submissions);
             resolve(submissions);
 
           } else {
