@@ -80,6 +80,7 @@ export function fetchSurveyData(params) {
         error = assembleError({ error, response })
         if (error) {
           console.log("Failed to fetch submission data.")
+          console.log("Response body: " + response.body);
           reject(error);
         } else {
           const jsonBody = JSON.parse(parser.toJson(body));
