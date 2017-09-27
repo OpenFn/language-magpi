@@ -31,12 +31,14 @@ export function execute(...operations) {
 
 /**
  * Make a POST request to fetch Magpi data and POST it somewhere else
- * https://www.magpi.com/api/surveydata/v2?username=taylordowns2000&accesstoken=BLAHBLAHBLAH&surveyid=921409679070
+ * @public
  * @example
- * execute(
- *   fetchSurveyData(params)
- * )(state)
- * @constructor
+ * fetchSurveyData({
+ *  "surveyId": "37479",
+ *  "afterDate": "2017-09-27",
+ *  "postUrl": "https://www.openfn.org/inbox/your-inbox-url"
+ * })
+ * @function
  * @param {object} params - data to make the fetch
  * @returns {Operation}
  */
@@ -44,14 +46,16 @@ export function fetchSurveyData(params) {
 
   return state => {
 
-    // an error helper function...
     function assembleError({ response, error }) {
       if (response && ([200, 201, 202].indexOf(response.statusCode) > -1)) return false;
       if (error) return error;
       return new Error(`Server responded with ${response.statusCode}`)
     };
 
+    console.log(params.surveyId);
     const { surveyId, afterDate, beforeDate, postUrl } = expandReferences(params)(state);
+    console.log(surveyId);
+
 
     const { accessToken, username } = state.configuration;
 
@@ -142,15 +146,14 @@ export function fetchSurveyData(params) {
 
 /**
  * Submit a record for a form/survey which already exists in a Magpi user account
+ * @public
  * @example
- * execute(
- *   submitRecord(data)
- * )(state)
- * @constructor
- * @param {object} submitRecord - Payload data for the record
+ * submitRecord(jsonData)
+ * @function
+ * @param {object} jsonData - Payload data for the record
  * @returns {Operation}
  */
-export function submitRecord(data) {
+export function submitRecord(jsonData) {
 
   return state => {
     const jsonBody = expandReferences(data)(state);

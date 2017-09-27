@@ -1,6 +1,6 @@
 {
   "name": "language-magpi",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A Magpi Language Pack for OpenFn",
   "main": "lib/index.js",
   "scripts": {

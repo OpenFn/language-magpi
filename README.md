@@ -25,7 +25,7 @@ Allows you to fetch data from Magpi and post it elsewhere.
 https://www.magpi.com/api/surveydata/v2?username=taylordowns2000&accesstoken=blahblahblah&surveyid=921409679070
 ```js
 fetchSurveyData({
-  "surveyId": 37479,
+  "surveyId": "37479",
   "afterDate": "2016-01-01",
   "beforeDate": "2100-01-01",
   "postUrl": "https://www.openfn.org/inbox/secret-5c25-inbox-ba2c-url"
