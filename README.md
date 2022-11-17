@@ -11,8 +11,9 @@ Documentation
 -------------
 
 ## Sample configuration
+
 ```json
-"configuration": {
+{
   "username": "taylordowns2000",
   "accessToken": "super-secret"
 }
