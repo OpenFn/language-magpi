@@ -1,4 +1,9 @@
-Language Magpi [![Build Status](https://travis-ci.org/OpenFn/language-magpi.svg?branch=master)](https://travis-ci.org/OpenFn/language-magpi)
+# _⚠️ MOVED TO [OpenFn/adaptors](https://github.com/OpenFn/adaptors)! ⚠️_
+
+**N.B.: New versions are available at:
+https://github.com/OpenFn/adaptors/tree/main/packages/magpi**
+
+# Language Magpi (Archived)
 ==============
 
 Language Pack for building expressions and operations for working with
